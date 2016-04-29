@@ -14,7 +14,9 @@ A simple use case might look like this:
     for row in frame.rows():
         print(row)
 
-Where the rows will be displayed as they would be rendered by a standards-compliaent browser, taking all of the various positioning directives into account. 
+Where the rows will be displayed as they would be rendered by a standards-complient browser, taking all of the various positioning directives into account.  There are also two demo scripts:
+- tests/show-periodc.py
+- tests/show-grammer.py
 
-
+providing somewhat more complex use cases involving semantic extraction from HTML tables Wikipedia (Periodic Table and Japanese verb declension, respectively).
 
