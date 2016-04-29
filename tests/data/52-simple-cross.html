@@ -1,0 +1,34 @@
+<!DOCTYPE>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<table>
+    <tr> 
+        <td>A</td>
+        <td rowspan=3>B</td>
+        <td>C</td>
+    </tr> 
+    <tr> 
+        <td colspan=3>D</td>
+    </tr> 
+    <tr> 
+        <td>E</td>
+        <td>F</td>
+    </tr> 
+</table>
+<hr>
+<pre>
+{
+  "rows": [
+    ["A","B","C"],
+    ["D","D","D"],
+    ["E","B","F"]
+  ],
+  "dims": [3,3]
+}
+</pre>
+In which row 'D' overrides column 'B' (by order of declaration), but column 'B' still pushes into (and perturbs) the bottom row. 
+</body>
+</html>

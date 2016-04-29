@@ -1,0 +1,68 @@
+<!DOCTYPE>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet"/>
+  <style>td { padding:5px; }</style>
+</head>
+<body>
+<table>
+    <thead>
+        <tr> 
+            <th rowspan=2>A</th>
+            <th>B</th>
+            <th rowspan=3>C</th>
+        </tr> 
+        <tr> 
+            <th>D</th>
+        </tr> 
+    </thead>
+    <tbody>
+        <tr> 
+            <td>G</td>
+            <td>H</td>
+            <td>I</td>
+        </tr> 
+        <tr> 
+            <td colspan=4>J</td>
+        </tr> 
+    </tbody>
+    <tfoot>
+        <tr> 
+            <td rowspan=3 colspan=2>K</td>
+        </tr> 
+    </tfoot>
+</table>
+<strong>Special Note</strong>:  Due to rendering defaults, this table seems to show 3 columns when really it has 4.  That's because row J has an enforced <tt>colspan=4</tt>, but because the 4th cell isn't anchored by any physical cells in the same column (either above or below), it gets displayed as an "empty" cell &mdash; but if you squint, you'll notice that there is a small "stub" of a cell in there.  Despite a few attempts, I couldn't quite find a CSS tick to force this table to render in a fixed-width fashion.
+<hr>
+<pre>
+{
+  "dims": [5,4],
+  "head": [ 
+    ["A","B","C"],
+    ["A","D","C"]
+  ],
+  "body": [ 
+    ["G","H","I",null],
+    ["J","J","J","J"]
+  ],
+  "foot": [
+    ["K","K"]
+  ],
+  "rows": [ 
+    ["A","B","C",null],
+    ["A","D","C",null],
+    ["G","H","I",null],
+    ["J","J","J","J"],
+    ["K","K",null,null]
+  ]
+}
+</pre>
+A simple multi-sectional case that exercises various features: 
+<ul>
+  <li> column C, being subject to the row depth constraint of the header, is cropped at depth 2 (despite having rowspan=3).  If this weren't the case then we'd expect it to pertub the position of cell I.
+  <li> cell D appears one cell over (to the right) instead of in the left-most column, due to the effect of A's rowspan.
+  <li> Row J pushes out to depth 4, altering not just the effective width of the row above (G,H,I) but of the <tt>body</tt> section as a whole.  
+  <li> Finally, the footer block K (nominally of dims 3x2) can only push the depth of the enclosing frame out to 5 (rather than 7 like we might expect), due to the fact that there are no additional physical rows in that section (hence, its depth remains bounded by 1).  However, its cells are padded out to width 4 in the enclosing frame (but not in the footer block). 
+</ul>
+</body>
+</html>

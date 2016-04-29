@@ -1,0 +1,20 @@
+th {
+    background: #c0c;
+    margin: 10px;
+    padding: 10px;
+}
+
+td {
+    text-align: center;
+    background: #f00;
+    margin: 10px;
+    padding: 10px;
+}
+
+table {
+    background: #999;
+}
+
+pre {
+    background: #ddd;
+}

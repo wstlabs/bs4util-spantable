@@ -1,0 +1,28 @@
+<!DOCTYPE>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<table>
+    <tr> 
+        <td>A</td>
+        <td rowspan=2>B</td>
+    </tr> 
+    <tr> 
+        <td colspan="nada">C</td>
+    </tr> 
+</table>
+<hr>
+<pre>
+{
+  "body" : [
+    ["A","B"],
+    ["C","B"]
+  ],
+  "dims": [2,2]
+}
+</pre>
+Invalid <tt>colspan</tt> attribute in cell C (defaults to 1).  Hence, it fails to overlap with column B.
+</body>
+</html>

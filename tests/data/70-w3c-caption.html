@@ -1,0 +1,43 @@
+<!DOCTYPE>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<table>
+ <caption>
+  <strong>Characteristics with positive and negative sides.</strong>
+  <p>Characteristics are given in the second column, with the
+  negative side in the left column and the positive side in the right
+  column.</p>
+ </caption>
+ <thead>
+  <tr>
+   <th id="n"> Negative
+   <td> Characteristic
+   <th> Positive
+ <tbody>
+  <tr>
+   <td headers="n r1"> Sad
+   <th id="r1"> Mood
+   <td> Happy
+  <tr>
+   <td headers="n r2"> Failing
+   <th id="r2"> Grade
+   <td> Passing
+</table>
+<hr>
+<pre>
+{
+  "head": [["Negative","Characteristic","Positive"]],
+  "body": [
+    ["Sad","Mood","Happy"],
+    ["Failing","Grade","Passing"]
+  ],
+  "dims": [3,3]
+}
+</pre>
+A simple test of head + body catenation, with mixed <tt>th</tt> and <tt>td</tt> elements. <p>
+Near-verbatim from section 4.9.1.1 of the W3C spec, with a slight alteration (we've set the second cell in the header to be a TD rather than a TH, to verify that our parser can admit cells of either kind, regardless of section type). 
+</body>
+</html>

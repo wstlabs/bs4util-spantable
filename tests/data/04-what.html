@@ -1,0 +1,29 @@
+<!DOCTYPE>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<table>
+    <tr> 
+        <td colspan=2>A</td>
+        <td rowspan=3>B</td>
+    </tr> 
+    <tr> 
+        <td>C</td>
+        <td>D</td>
+    </tr> 
+</table>
+<hr>
+<pre>
+{
+  "body": [
+    ["A","A","B"],
+    ["C","D","B"]
+  ],
+  "dims":[2,3]
+}
+</pre>
+Note that the B column has rowspan=3, but is cropped at depth 2. 
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE>
+<html>
+<head>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+<table>
+    <tr> 
+        <td>A</td>
+        <td rowspan=2>B</td>
+    </tr> 
+    <tr> 
+        <td colspan=2>C</td>
+    </tr> 
+</table>
+<hr>
+<pre>
+{
+  "body" : [
+    ["A","B"],
+    ["C","C"]
+  ],
+  "dims": [2,2]
+}
+</pre>
+Note that column overlaps row C at cell (1,1).  Since C was declared after B, its value takes precedence.
+</body>
+</html>
