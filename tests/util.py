@@ -63,16 +63,16 @@ def test_dims(frame,spec):
     assert frame.dims == spec['dims'], "frame.dims - mismatch"
 
 def test_frame_rows(frame,spec):
-    log.debug("frame.rows: got = %s" % list(frame.rows))
+    log.debug("frame.rows: got = %s" % list(frame.rows()))
     log.debug("frame.rows: exp = %s" % spec['rows'])
-    assert list(frame.rows) == spec['rows'], "frame.rows - mismatch"
+    assert list(frame.rows()) == spec['rows'], "frame.rows - mismatch"
 
 # Note that key is expected to be in spec, but spec[key] may be None. 
 def test_section_rows(frame,spec,key):
     section = frame.__getattribute__(key)
-    log.debug("frame.%s.rows: got = %s" % (key,list(section.rows)))
+    log.debug("frame.%s.rows: got = %s" % (key,list(section.rows())))
     log.debug("frame.%s.rows: exp = %s" % (key,spec[key]))
-    assert list(section.rows) == spec[key], "frame.%s.rows - mismatch" % key
+    assert list(section.rows()) == spec[key], "frame.%s.rows - mismatch" % key
 
 # Note that key is expected to be in spec, but spec[key] may be None. 
 def test_section(frame,spec,key):

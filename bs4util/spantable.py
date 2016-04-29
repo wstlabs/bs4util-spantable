@@ -39,11 +39,10 @@ class SpanTableDataFrame(object):
     def dims(self):
         return (self.depth,self.width)
 
-    @property
     def rows(self):
         for section in (self.head,self.body,self.foot):
             if section is not None:
-                for row in section.rowiter():
+                for row in section.rows():
                     yield rpad_list(row,self.width)
 
     #
@@ -78,7 +77,7 @@ class SpanTableDataFrame(object):
         elif key in ('head','body','foot'):
             return self.__getattribute__(key) 
         elif key == 'rows':
-            return self.rows
+            return self.rows()
         else:
             raise KeyError("invalid memebr key")
 
@@ -120,13 +119,9 @@ class SpanTableSection(object):
     def text(self):
         return [ self.get_text_row(i) for i in range(0,self.depth) ]
 
-    def rowiter(self):
+    def rows(self):
         for i in range(0,self.depth):
             yield self.get_text_row(i)
-
-    @property
-    def rows(self):
-        return list(self.rowiter())
 
 #
 # Helper methods
@@ -320,7 +315,7 @@ def describe_frame(frame):
             yield "frame.%s = %s" % (key,list(member))
         else: 
             # Implicity key must be one of 'head','body','foot':
-            yield "frame.%s = %s = %s" % (key,member,member.rows)
+            yield "frame.%s = %s = %s" % (key,member,member.rows())
 
 def print_frame(frame):
     for line in describe_frame(frame):
