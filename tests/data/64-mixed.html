@@ -1,0 +1,36 @@
+<!DOCTYPE>
+<html>
+<head>
+  <link href="style-multi.css" rel="stylesheet"/>
+</head>
+<body>
+<table>
+    <tfoot>
+        <tr> <td>A</td> <td>A</td> <td>A</td> </tr>
+        <tr> <td>B</td> <td>B</td> <td>B</td> </tr>
+    </tfoot>
+    <tr> <td rowspan=2>C</td> <td colspan=2>D</td> </tr> 
+    <tr> <td>E</td> <td rowspan=3>F</td> </tr> 
+    <tr> <td colspan=2>G</td> </tr> 
+    <thead>
+        <tr> <td>H</td> <td>H</td> <td>H</td> </tr>
+    </thead>
+    <tr> <td>I</td> <td>I</td> </tr>
+    <thead>
+        <tr> <td>J</td> <td>J</td> <td>J</td> </tr>
+    </thead>
+    <tr> <td>K</td> <td>K</td> <td>K</td> </tr>
+</table>
+<hr>
+<pre>
+{
+  "body": [
+    ["A","B","B"],
+    ["A","E","C"],
+    ["D","D","C"]
+  ],
+  "dims": [3,3]
+}
+</pre>
+</body>
+</html>
