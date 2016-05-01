@@ -104,7 +104,7 @@ class SpanTableDataFrame(object):
             for row in section.rows():
                 yield rpad_list(row,self.width)
 
-    # Provided an ordered dict as a convenience for automated testing.  
+    # Provides an ordered dict as a convenience for automated testing.  
     # The basic idea is that there are 5 main 'members' of interest 
     # ('dims','head','body','foot','rows') -- corresponding to the 
     # frame_keys() method at the very top -- which are nice to be able 
@@ -189,26 +189,6 @@ def rpad_list(row,width):
     extra = [None] * (width - len(row))
     return row + extra
 
-#
-# Hence the prefix 'cast_' up front.  In other uses, it's best to consider 
-# null sections as having null attributes (including depth/width), to avoid
-# semantic confusion.
-#
-# def cast_section_depth(section): 
-#    return 0 if section is None else section.depth
-
-# def cast_section_width(section): 
-#    return 0 if section is None else section.width
-
-def cast_section_name(section):
-    return None if section is None else section.name
-
-# We also sometimes need to cast the 'dims' tuple when iterating over 
-# sections, but since we generally don't need to sum or max over it, we
-# can afford to do so in the semantically correct way.
-def cast_section_dims(section): 
-    return None if section is None else section.dims
-
 
 def textify(cell):
     return cell.getText(strip=True) if cell is not None else None
@@ -230,8 +210,6 @@ def effective_width(pure,alias):
         return max(maxj_pure + 1, maxj_alias + 1)
     else:
         return maxj_pure + 1
-
-
 
 
 def describe_rows(rows):
@@ -291,8 +269,6 @@ def paint_alias(a,i,j,spantup,depth):
     if rowspan > 1 or colspan > 1:
         rowmax = min(i+rowspan,depth)
         colmax = j+colspan
-        # tups = product(range(i,rowmax),range(j,colmax))
-        # print(":: paint[%d,%d] + %s => %s" % (i,j,str(spantup),list(tups)))
         for t in product(range(i,rowmax),range(j,colmax)):
             if t != (i,j):
                 a[t] = (i,j)
@@ -301,14 +277,6 @@ def paint_alias(a,i,j,spantup,depth):
 def assert_section_name(name):
     if name not in section_names():
         raise ValueError("invalid section name '%s'" % name)
-
-
-
-# Takes tag object (presumably a 'tr' element) and returns a list of
-# children which are table cells (name = 'th','td').
-# def row2cells(tag):
-#    nameset = set(['th','td'])
-#    return list(expected_children(tag,nameset))
 
 
 # Takes an iterable of tag objects (presumably 'tr' elements), and 
@@ -398,34 +366,21 @@ def groupby_virtual_sections(tag):
 
 def parse_logical_sections(table):
     for enctag,rowgroup in groupby_virtual_sections(table):
-        name = cast_section_name(enctag)
+        name = None if enctag is None else enctag.name
         rows = cell_grid(rowgroup)
-        # print(":: logical = %s => %d rows = %s" % (name,len(rows),rows))
         pure,alias = parse_grid(rows)
         yield (name,pure,alias)
 
 
 def parse_sections(table):
+    '''Yields a sequence of section containers for logical sections under a table element.''' 
     for name,pure,alias in parse_logical_sections(table):
         yield SpanTableSection(name,pure,alias)
 
 def parse_table(table):
     sections = parse_sections(table)
-    # for section in sections:
-    #    print(":: section = %s" % section) 
     return SpanTableDataFrame(sections)
-    # sections = list(parse_sections(table))
-    # if len(sections) == 0:
-    #    sections = [parse_section(table)]
 
-
-def __parse_table(soup):
-    head = parse_section(soup.thead) if soup.thead is not None else None
-    body = parse_section(soup.tbody) if soup.tbody is not None else None
-    foot = parse_section(soup.tfoot) if soup.tfoot is not None else None
-    if (head,body,foot) == (None,None,None):
-        body = parse_section(soup)
-    return SpanTableDataFrame(head,body,foot)
 
 
 def dump_table(table):
