@@ -1,0 +1,33 @@
+<!DOCTYPE>
+<html>
+<head>
+  <style>
+    table { border-collapse: collapse; border: solid thick; }
+    colgroup, tbody { border: solid medium; }
+    td { border: solid thin; height: 1.4em; width: 1.4em; text-align: center; padding: 0; }
+    thead td { background :#f00; }
+    tbody td { background :#0f0; }
+    tfoot td { background :#00f; }
+  </style>
+</head>
+<body>
+  <h1>body-head</h1>
+  <table>
+
+    <tfoot><tr><td>A</td><td>A</td><td>A</td></tr></tfoot>
+    <tbody><tr><td>B</td><td>B</td><td>B</td></tr></tbody>
+    <thead><tr><td>C</td><td>C</td><td>C</td></tr></thead>
+    <thead><tr><td>D</td><td>D</td><td>D</td></tr></thead>
+    <tbody><tr><td>E</td><td>E</td><td>E</td></tr></thead>
+    <thead><tr><td>F</td><td>F</td><td>F</td></tr></thead>
+    <tbody><tr><td>G</td><td>G</td><td>G</td></tr></thead>
+    <thead><tr><td>H</td><td>H</td><td>H</td></tr></thead>
+  </table>
+<pre>
+{
+  "dims":[10,3]
+}
+</pre>
+</body>
+</html>
+
