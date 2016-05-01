@@ -373,14 +373,14 @@ def parse_logical_sections(table):
 
 
 def parse_sections(table):
-    '''Yields a sequence of section containers for logical sections under a table element.''' 
+    '''Yields a sequence of SpanTableSection objects for physical sections under a table element''' 
     for name,pure,alias in parse_logical_sections(table):
         yield SpanTableSection(name,pure,alias)
 
 def parse_table(table):
+    '''Returns a SpanTableDataFrame object correspoding to a given table element'''
     sections = parse_sections(table)
     return SpanTableDataFrame(sections)
-
 
 
 def dump_table(table):
