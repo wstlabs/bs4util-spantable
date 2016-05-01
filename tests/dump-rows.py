@@ -10,7 +10,10 @@ filename = sys.argv[1]
 
 html = "\n".join(open(filename,"rt").readlines())
 soup = BeautifulSoup(html)
-table = soup.find_all('table')[0]
+tables = soup.find_all('table')
+print("Document has %d table(s)." % len(tables))
+table = tables[0]
+
 frame = parse_table(table)
 for row in frame.rows():
     print(row)
