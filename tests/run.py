@@ -7,9 +7,10 @@ from tests.util import find_files, read_file, extract_test, test_pair, describe_
 import logging
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--loud', dest='loud', action='store_true')
+parser.add_argument('--prefix',  dest='prefix', default='')
 parser.add_argument('--no-skip', dest='noskip', action='store_true')
-parser.add_argument('--prefix', dest='prefix', default='')
+parser.add_argument('--skip',    dest='noskip', action='store_false')
+parser.add_argument('--loud',    dest='loud',   action='store_true')
 args = parser.parse_args()
 
 if args.loud:
@@ -24,8 +25,8 @@ logging.basicConfig(
 )
 log = logging.getLogger()
 
-# files = sorted(glob("tests/data/%s*.html" % args.prefix))
-todolist,skiplist = find_files('tests/data',args.prefix)
+skip = not args.noskip
+todolist,skiplist = find_files('tests/data',args.prefix,skip)
 log.info("that be %d files (%d skipped)." % (len(todolist),len(skiplist)))
 
 for path in todolist: 

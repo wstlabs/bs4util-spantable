@@ -8,14 +8,10 @@ import logging
 
 log = logging.getLogger()
 
-print("NAME = %s" % __name__)
-
 def show_log():
     print("log = %s" % log)
     log.info("info! %s" % __name__)
     log.debug("debug! %s" % __name__)
-
-# show_log()
 
 def find_files(dirpath,prefix,skip=True):
     '''Finds files to test in a given directory.'''
@@ -26,7 +22,6 @@ def find_files(dirpath,prefix,skip=True):
         return todolist,skiplist
     else:
         return paths,[]
-
 
 def read_file(path):
     with open(path,"rt") as f:

@@ -1,64 +1,121 @@
 import re
 from copy import deepcopy
-from itertools import product
+from itertools import product, groupby
 from collections import defaultdict, OrderedDict
 
 def frame_keys(): 
     return ('dims','head','body','foot','rows')
 
+def section_names(): 
+    return ('thead','tbody','tfoot')
 
 class SpanTableDataFrame(object):
 
-    def __init__(self,head=None,body=None,foot=None):
-        self.head = head
-        self.body = body 
-        self.foot = foot
+    def __init__(self,sections):
+        self._first = {}
+        self.physical = []
+        self.consume(sections)
 
     def __str__(self):
-        return "STDF(dims=%s,head=%s,body=%s,foot=%s)" % ( 
-            self.dims,
-            cast_section_dims(self.head),
-            cast_section_dims(self.body),
-            cast_section_dims(self.foot)
-        )
+        sections = ",".join(str(s) for s in self.sections())
+        return "STDF(%d,%s;%s)" % (self.depth,self.width,sections)
 
+    def __len__(self):
+        return len(self.physical)
 
+    def add(self,section):
+        if section.name not in self._first:
+            self._first[section.name] = len(self.physical)
+        self.physical.append(section)
+
+    def consume(self,sections):
+        for section in sections:
+            self.add(section)
+    
     def sections(self):
-        '''Returns a tuple of (head,body,foot)'''
-        return self.head,self.body,self.foot
+        '''A generator which yields sections in logical (render) order:'''
+        # for i,phys in enumerate(self.physical):
+        #    print(":: phys[%d] = %s" % (i,phys))
+        # print(":: _first = %s" % self._first)
+        if 'thead' in self._first:
+            yield self.physical[self._first['thead']]
+        for i,section in enumerate(self.physical):
+            if (
+                (section.name == 'thead' and self._first.get('thead') != i) or
+                (section.name == 'tfoot' and self._first.get('tfoot') != i) or
+                (section.name == 'tbody' or section.name is None)
+            ): yield section
+        if 'tfoot' in self._first:
+            yield self.physical[self._first['tfoot']]
+            
+    def first(self,name):
+        if name in self._first:
+            return self.physical[self._first[name]]
+        else:
+            return None
+
+
+    @property
+    def head(self): 
+        return self.first('thead')
+
+    @property
+    def body(self): 
+        if 'tbody' in self._first and None in self._first:
+            if self._first['tbody'] < self._first[None]:
+                return self.first('tbody')
+            else:
+                return self.first(None)
+        elif 'tbody' in self._first:
+            return self.first('tbody')
+        elif None in self._first:
+            return self.first(None)
+        else:
+            return None
+
+    @property
+    def foot(self): 
+        return self.first('tfoot')
 
     @property
     def depth(self):
-        return sum(map(cast_section_depth,self.sections()))
+        # for section in self.sections():
+        #    print(":: depth section = %s, depth = %s" % (section,section.depth))
+        if len(self) > 0:
+            return sum(s.depth for s in self.sections())
+        else:
+            return 0
 
     @property
     def width(self):
-        return max(map(cast_section_width,self.sections()))
+        # for section in self.sections():
+        #    print(":: depth section = %s, width = %s" % (section,section.width))
+        if len(self) > 0:
+            return max(s.width for s in self.sections())
+        else:
+            return None
 
     @property
     def dims(self):
         return (self.depth,self.width)
 
     def rows(self):
-        for section in (self.head,self.body,self.foot):
-            if section is not None:
-                for row in section.rows():
-                    yield rpad_list(row,self.width)
+        for section in self.sections(): 
+            for row in section.rows():
+                yield rpad_list(row,self.width)
 
-    #
-    # This next accessors provided an ordered dict as a convenience for 
-    # automated testing.  The basic idea is that there are 5 main 'members' 
-    # of interest ('dims','head','body','foot','rows') -- corresponding to
-    # the frame_keys() method at the very top -- which are nice to be able 
+    # Provided an ordered dict as a convenience for automated testing.  
+    # The basic idea is that there are 5 main 'members' of interest 
+    # ('dims','head','body','foot','rows') -- corresponding to the 
+    # frame_keys() method at the very top -- which are nice to be able 
     # to cycle through and pull in a parameterized fashion.
-    #
-
     def as_dict(self):
         '''Returns an OrderedDict of important attributes of interest.'''
         return OrderedDict((key,self._member(key)) for key in self._keys())
 
-    # The next 3 methods are helpers for the 'as_dict' method, but are kept
-    # private so as to not muck up the public interface.
+    #
+    # Some private helper methods to as_dict, above. 
+    #
 
     def _keys(self):
         return (key for key in frame_keys() if self._contains(key)) 
@@ -85,14 +142,15 @@ class SpanTableDataFrame(object):
 
 class SpanTableSection(object):
 
-    def __init__(self,pure,alias):
+    def __init__(self,name,pure,alias):
+        self.name = name 
         self.pure = pure 
         self.alias = pivot_alias(alias)
         self.depth = len(self.pure) 
         self.width = effective_width(self.pure,self.alias)
 
     def __str__(self):
-        return "STS(%s)" % str(self.dims)
+        return "STS(%s,%d,%s)" % (self.name,self.depth,self.width)
 
     @property
     def dims(self):
@@ -132,19 +190,18 @@ def rpad_list(row,width):
     return row + extra
 
 #
-# A couple of accessors that nicely cast a section's "depth" to 0 if that
-# section is.  Note that the intended use is for 'sum' and 'max' functions
-# when iterating over lists of sections (e.g. for a given data frame). 
-#
 # Hence the prefix 'cast_' up front.  In other uses, it's best to consider 
 # null sections as having null attributes (including depth/width), to avoid
 # semantic confusion.
 #
-def cast_section_depth(section): 
-    return 0 if section is None else section.depth
+# def cast_section_depth(section): 
+#    return 0 if section is None else section.depth
 
-def cast_section_width(section): 
-    return 0 if section is None else section.width
+# def cast_section_width(section): 
+#    return 0 if section is None else section.width
+
+def cast_section_name(section):
+    return None if section is None else section.name
 
 # We also sometimes need to cast the 'dims' tuple when iterating over 
 # sections, but since we generally don't need to sum or max over it, we
@@ -175,25 +232,7 @@ def effective_width(pure,alias):
         return maxj_pure + 1
 
 
-def is_cell(tag):
-    return tag.name in ('td','th')
 
-def find_cells(tag):
-    return filter(is_cell,tag.children)
-
-def first_pass(tag):
-    rows = tag.find_all('tr',recursive=False)
-    # print(":: first_pass - depth=%d" % len(rows)) 
-    for i,row in enumerate(rows):
-        cells = list(filter(is_cell,row.children))
-        # print(":: first_pass - row[%d] : width=%d" % (i,len(cells)))
-        for j,cell in enumerate(cells):
-            # print(":: first_pass : cell[%d,%d] = %s : %s" % (i,j,cell.name,cell.attrs))
-            pass
-    rows = [
-        list(filter(is_cell,row.children)) for row in tag.find_all('tr',recursive=False)
-    ]
-    return rows
 
 def describe_rows(rows):
     print(":: describe depth=%d" % len(rows))
@@ -259,15 +298,37 @@ def paint_alias(a,i,j,spantup,depth):
                 a[t] = (i,j)
 
 
-def parse_section(tag):
-    rows = first_pass(tag)
-    # describe_rows(rows)
+def assert_section_name(name):
+    if name not in section_names():
+        raise ValueError("invalid section name '%s'" % name)
+
+
+
+# Takes tag object (presumably a 'tr' element) and returns a list of
+# children which are table cells (name = 'th','td').
+# def row2cells(tag):
+#    nameset = set(['th','td'])
+#    return list(expected_children(tag,nameset))
+
+
+# Takes an iterable of tag objects (presumably 'tr' elements), and 
+# returns a convenient list-of-list struct where the row elements are 
+# table cell elements (name = 'th','td') only.
+def cell_grid(tagseq):
+    nameset = set(['th','td'])
+    return [ list(expected_children(tag,nameset)) for tag in tagseq ]
+
+
+#
+# Parses a "cell grid" struct of the type above, returns tuple of 
+# (pure,alias) structs which get fed into the STDF constructor. 
+#
+def parse_grid(rows):
     depth = len(rows)
     pure,alias = [],{}
-    rows = tag.find_all('tr',recursive=False)
     # print(":: parse_section - depth=%d" % depth) 
-    for i,row in enumerate(rows):
-        cells = list(filter(is_cell,row.children))
+    for i,cells in enumerate(rows):
+        # cells = list(filter(is_cell,row.children))
         # print(":: parse_section - row[%d] : width=%d" % (i,len(cells)))
         k = 0
         purerow = {}
@@ -286,10 +347,79 @@ def parse_section(tag):
         pure.append(purerow)
     # print("pure =",pure)
     # print("alias =",alias)
-    return SpanTableSection(pure,alias)
+    # return SpanTableSection(tag.name,pure,alias)
+    return pure,alias
 
 
-def parse_table(soup):
+
+
+def expected_children(tag,nameset):
+    '''Yields direct child elements of a tag matching a given name set.''' 
+    def is_expected(tag):
+        return tag.name in nameset
+    return filter(is_expected,tag.find_all(recursive=False))
+
+#1234567890123456789012345678901234567890123456789012345678901234567890123456789
+
+#
+# A crucial grouping iterator which looks at Tag object (presumably a 'table' 
+# element) and yields tuples of (enclosing tag, rowgroup), taking care to 
+# logically group sequences of "free" rows (sequences of 'tr' elements with no 
+# enclosing tags), returning None in place of their enclosing tag eleement.
+#
+# More specifically: in canonically defined tables the enclosing tag will be a 
+# thead/tbody/tfoot element, and the rowgroup will be an iterator if its child 
+# 'tr' elements.  And in tables with blocks of "free rows" we simply yield None 
+# in place of the enclosing tag object (and yield the sequence of 'tr' elements 
+# as its "child" row elements).
+#
+# So if we had a table element which had 'thead' and 'tfoot' sections declared, 
+# with a block of "free" rows in between (i.e. with no enclosing 'tbody' tags), 
+# our (key,group) sequence might look like this:
+#
+#   ( 
+#     ('thead',('tr','tr')),
+#     ( None,  ('tr','tr','tr')),
+#     ('tfoot',('tr'))
+#   )
+#      
+#
+def groupby_virtual_sections(tag):
+    nameset = set(['thead','tbody','tfoot','tr']) 
+    children = expected_children(tag,nameset)
+    for key,group in groupby(children,lambda child:child.name):
+        if key == 'tr':
+            yield None,group 
+        else:
+            for enctag in group:
+                rowgroup = enctag.find_all('tr',recursive=False)
+                yield enctag,rowgroup
+
+
+def parse_logical_sections(table):
+    for enctag,rowgroup in groupby_virtual_sections(table):
+        name = cast_section_name(enctag)
+        rows = cell_grid(rowgroup)
+        # print(":: logical = %s => %d rows = %s" % (name,len(rows),rows))
+        pure,alias = parse_grid(rows)
+        yield (name,pure,alias)
+
+
+def parse_sections(table):
+    for name,pure,alias in parse_logical_sections(table):
+        yield SpanTableSection(name,pure,alias)
+
+def parse_table(table):
+    sections = parse_sections(table)
+    # for section in sections:
+    #    print(":: section = %s" % section) 
+    return SpanTableDataFrame(sections)
+    # sections = list(parse_sections(table))
+    # if len(sections) == 0:
+    #    sections = [parse_section(table)]
+
+
+def __parse_table(soup):
     head = parse_section(soup.thead) if soup.thead is not None else None
     body = parse_section(soup.tbody) if soup.tbody is not None else None
     foot = parse_section(soup.tfoot) if soup.tfoot is not None else None
