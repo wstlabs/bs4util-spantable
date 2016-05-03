@@ -182,7 +182,6 @@ def rpad_list(row,width):
     extra = [None] * (width - len(row))
     return row + extra
 
-
 def textify(cell):
     return cell.getText(strip=True) if cell is not None else None
 
@@ -204,15 +203,6 @@ def effective_width(pure,alias):
     else:
         return maxj_pure + 1
 
-
-def describe_rows(rows):
-    yield "depth=%d" % len(rows)
-    for i,row in enumerate(rows):
-        yield "row[%d] : width=%d" % (i,len(row))
-        for j,cell in enumerate(row):
-            yield "cell[%d,%d] = %s : %s" % (i,j,cell.name,cell.attrs)
-    dims = declared_dimensions(rows)
-    yield "dims = %s" % str(dims)
 
 #
 # Returns the "logical" colspan or rowspan value the way a lenient 
@@ -363,6 +353,14 @@ def parse_table(table):
     sections = parse_sections(table)
     return SpanTableDataFrame(sections)
 
+def describe_rows(rows):
+    yield "depth=%d" % len(rows)
+    for i,row in enumerate(rows):
+        yield "row[%d] : width=%d" % (i,len(row))
+        for j,cell in enumerate(row):
+            yield "cell[%d,%d] = %s : %s" % (i,j,cell.name,cell.attrs)
+    dims = declared_dimensions(rows)
+    yield "dims = %s" % str(dims)
 
 def describe_frame(frame):
     d = frame.as_dict()
