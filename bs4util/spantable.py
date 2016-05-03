@@ -9,7 +9,7 @@ def frame_keys():
 def section_names(): 
     return ('thead','tbody','tfoot')
 
-class SpanTableDataFrame(object):
+class TableFrame(object):
 
     def __init__(self,sections):
         self._first = {}
@@ -133,7 +133,7 @@ class SpanTableDataFrame(object):
 
 
 
-class SpanTableSection(object):
+class TableFrameSection(object):
 
     def __init__(self,name,pure,alias):
         self.name = name 
@@ -345,14 +345,14 @@ def parse_logical_sections(table):
 
 
 def parse_sections(table):
-    '''Yields a sequence of SpanTableSection objects for physical sections under a table element''' 
+    '''Yields a sequence of TableFrameSection objects for physical sections under a table element.''' 
     for name,pure,alias in parse_logical_sections(table):
-        yield SpanTableSection(name,pure,alias)
+        yield TableFrameSection(name,pure,alias)
 
 def parse_table(table):
-    '''Returns a SpanTableDataFrame object correspoding to a given table element'''
+    '''Returns a TableFrame object correspoding to a given table element.'''
     sections = parse_sections(table)
-    return SpanTableDataFrame(sections)
+    return TableFrame(sections)
 
 def describe_rows(rows):
     yield "depth=%d" % len(rows)
