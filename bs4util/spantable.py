@@ -206,13 +206,13 @@ def effective_width(pure,alias):
 
 
 def describe_rows(rows):
-    print(":: describe depth=%d" % len(rows))
+    yield "depth=%d" % len(rows)
     for i,row in enumerate(rows):
-        print(":: describe : row[%d] : width=%d" % (i,len(row)))
+        yield "row[%d] : width=%d" % (i,len(row))
         for j,cell in enumerate(row):
-            print(":: describe : cell[%d,%d] = %s : %s" % (i,j,cell.name,cell.attrs))
+            yield "cell[%d,%d] = %s : %s" % (i,j,cell.name,cell.attrs)
     dims = declared_dimensions(rows)
-    print(":: describe dims = %s" % str(dims)) 
+    yield "dims = %s" % str(dims)
 
 #
 # Returns the "logical" colspan or rowspan value the way a lenient 
