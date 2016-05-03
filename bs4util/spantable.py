@@ -34,9 +34,6 @@ class SpanTableDataFrame(object):
     
     def sections(self):
         '''A generator which yields sections in logical (render) order:'''
-        # for i,phys in enumerate(self.physical):
-        #    print(":: phys[%d] = %s" % (i,phys))
-        # print(":: _first = %s" % self._first)
         if 'thead' in self._first:
             yield self.physical[self._first['thead']]
         for i,section in enumerate(self.physical):
@@ -79,8 +76,6 @@ class SpanTableDataFrame(object):
 
     @property
     def depth(self):
-        # for section in self.sections():
-        #    print(":: depth section = %s, depth = %s" % (section,section.depth))
         if len(self) > 0:
             return sum(s.depth for s in self.sections())
         else:
@@ -88,8 +83,6 @@ class SpanTableDataFrame(object):
 
     @property
     def width(self):
-        # for section in self.sections():
-        #    print(":: depth section = %s, width = %s" % (section,section.width))
         if len(self) > 0:
             return max(s.width for s in self.sections())
         else:
@@ -294,28 +287,17 @@ def cell_grid(tagseq):
 def parse_grid(rows):
     depth = len(rows)
     pure,alias = [],{}
-    # print(":: parse_section - depth=%d" % depth) 
     for i,cells in enumerate(rows):
-        # cells = list(filter(is_cell,row.children))
-        # print(":: parse_section - row[%d] : width=%d" % (i,len(cells)))
         k = 0
         purerow = {}
         for j,cell in enumerate(cells):
-            # print("..")
             while alias.get((i,k)):
                 k += 1
             purerow[k] = cell 
             spantup = logical_span(cell)
-            # print("i,k(j) = %d,%d(%d) => cell = %s" % (i,k,j,cell))
-            # print(":: parse_section - cell[%d,%d] : span = %s" % (i,k,str(spantup)))
             paint_alias(alias,i,k,spantup,depth)
-            # print("alias => ",alias)
             k += 1
-            # print("k => %d" % k) 
         pure.append(purerow)
-    # print("pure =",pure)
-    # print("alias =",alias)
-    # return SpanTableSection(tag.name,pure,alias)
     return pure,alias
 
 
@@ -327,7 +309,6 @@ def expected_children(tag,nameset):
         return tag.name in nameset
     return filter(is_expected,tag.find_all(recursive=False))
 
-#1234567890123456789012345678901234567890123456789012345678901234567890123456789
 
 #
 # A crucial grouping iterator which looks at Tag object (presumably a 'table' 
@@ -405,4 +386,6 @@ def describe_frame(frame):
 def print_frame(frame):
     for line in describe_frame(frame):
         print(line)
+
+#1234567890123456789012345678901234567890123456789012345678901234567890123456789
 
