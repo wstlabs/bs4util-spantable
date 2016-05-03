@@ -271,8 +271,9 @@ def cell_grid(tagseq):
 
 
 #
-# Parses a "cell grid" struct of the type above, returns tuple of 
-# (pure,alias) structs which get fed into the STDF constructor. 
+# The main guts of our parsing algorithm: traverses a "cell grid" 
+# struct of the type above, and returns tuple of (pure,alias) structs 
+# which get fed into the STDF constructor. 
 #
 def parse_grid(rows):
     depth = len(rows)
