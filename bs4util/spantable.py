@@ -364,13 +364,6 @@ def parse_table(table):
     return SpanTableDataFrame(sections)
 
 
-def dump_table(table):
-    for i,tr in enumerate(table.find_all('tr')):
-        cells = [td.string for td in tr.find_all('td')]
-        attrs = [deepcopy(td.attrs) for td in tr.find_all('td')]
-        print("cells[%d] = %s" % (i,cells))
-        print("attrs[%d] = %s" % (i,attrs))
-
 def describe_frame(frame):
     d = frame.as_dict()
     yield "frame = %s" % frame 
@@ -382,6 +375,13 @@ def describe_frame(frame):
         else: 
             # Implicity key must be one of 'head','body','foot':
             yield "frame.%s = %s = %s" % (key,member,member.rows())
+
+def dump_table(table):
+    for i,tr in enumerate(table.find_all('tr')):
+        cells = [td.string for td in tr.find_all('td')]
+        attrs = [deepcopy(td.attrs) for td in tr.find_all('td')]
+        print("cells[%d] = %s" % (i,cells))
+        print("attrs[%d] = %s" % (i,attrs))
 
 def print_frame(frame):
     for line in describe_frame(frame):
