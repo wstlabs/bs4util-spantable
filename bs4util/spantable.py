@@ -11,9 +11,10 @@ def section_names():
 
 class TableFrame(object):
 
-    def __init__(self,sections):
+    def __init__(self,table):
         self._first = {}
         self.physical = []
+        sections = parse_table(table)
         self.consume(sections)
 
     def __str__(self):
@@ -343,16 +344,10 @@ def parse_logical_sections(table):
         pure,alias = parse_grid(rows)
         yield (name,pure,alias)
 
-
-def parse_sections(table):
+def parse_table(table):
     '''Yields a sequence of TableFrameSection objects for physical sections under a table element.''' 
     for name,pure,alias in parse_logical_sections(table):
         yield TableFrameSection(name,pure,alias)
-
-def parse_table(table):
-    '''Returns a TableFrame object correspoding to a given table element.'''
-    sections = parse_sections(table)
-    return TableFrame(sections)
 
 def describe_rows(rows):
     yield "depth=%d" % len(rows)

@@ -4,7 +4,7 @@
 #
 import sys
 from bs4 import BeautifulSoup
-from bs4util.spantable import parse_table
+from bs4util.spantable import TableFrame 
 
 filename = sys.argv[1]
 
@@ -14,6 +14,6 @@ tables = soup.find_all('table')
 print("Document has %d table(s)." % len(tables))
 table = tables[0]
 
-frame = parse_table(table)
+frame = TableFrame(table)
 for row in frame.rows():
     print(row)

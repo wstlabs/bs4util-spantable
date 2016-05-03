@@ -5,14 +5,14 @@
 #
 import sys
 from bs4 import BeautifulSoup
-from bs4util.spantable import parse_table
+from bs4util.spantable import TableFrame 
 
 filename = "tests/data/90-periodic-table.html" 
 
 html = "\n".join(open(filename,"rt").readlines())
 soup = BeautifulSoup(html)
 table = soup.find_all('table')[0]
-frame = parse_table(table)
+frame = TableFrame(table)
 rows = list(frame.rows())
 
 def parse_rows(rows):

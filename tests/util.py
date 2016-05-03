@@ -1,6 +1,6 @@
 import simplejson as json
 from glob import glob
-from bs4util.spantable import parse_table, frame_keys, describe_frame
+from bs4util.spantable import TableFrame, frame_keys, describe_frame
 from collections import OrderedDict 
 from itertools import chain
 from copy import deepcopy
@@ -48,7 +48,7 @@ def describe_spec(spec):
 def extract_test(soup):
     table = soup.find_all('table')[0]
     block = soup.find_all('pre')[0].string
-    frame = parse_table(table)
+    frame = TableFrame(table)
     spec  = load_spec(block)
     return frame,spec
 

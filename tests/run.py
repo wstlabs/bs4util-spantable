@@ -1,9 +1,7 @@
 import os, sys, argparse 
-# import simplejson as json
-from bs4 import BeautifulSoup
 from glob import glob
-from bs4util.spantable import parse_table, describe_frame
-from tests.util import find_files, read_file, extract_test, test_pair, describe_spec
+from bs4 import BeautifulSoup
+from tests.util import find_files, read_file, extract_test, test_pair
 import logging
 
 parser = argparse.ArgumentParser()

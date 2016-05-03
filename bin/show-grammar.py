@@ -5,14 +5,14 @@
 #
 import sys
 from bs4 import BeautifulSoup
-from bs4util.spantable import parse_table
+from bs4util.spantable import TableFrame 
 
 filename = "tests/data/91-japanese-grammar.html" 
 
 html = "\n".join(open(filename,"rt").readlines())
 soup = BeautifulSoup(html)
 table = soup.find_all('table')[0]
-frame = parse_table(table)
+frame = TableFrame(table)
 
 # Constructs a "clean dict" out of two sequences, with degenerate key-val 
 # pairs (where the value part is an empty string) omitted.
