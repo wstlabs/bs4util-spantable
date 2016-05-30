@@ -141,7 +141,7 @@ class TableFrameSection(object):
         self.pure = pure 
         self.alias = pivot_alias(alias)
         self.depth = len(self.pure) 
-        self.width = effective_width(self.pure,self.alias)
+        self.width = logical_width(self.pure,self.alias)
 
     def __str__(self):
         return "STS(%s,%d,%s)" % (self.name,self.depth,self.width)
@@ -193,16 +193,23 @@ def pivot_alias(alias):
         a[i][j] = alias[(i,j)]
     return a
 
-def effective_width(pure,alias):
-    if pure:
-        maxj_pure = max(max(j for j in row.keys()) for row in pure if row) 
+def _pure_width(row):
+    if len(row):
+        return 1 + max(j for j in row.keys())
+    else:
+        return 0
+
+def logical_width(pure,alias):
+    '''Determines the effective (or logical) width of a grid represented by a pair of (pure,alias) structs.'''
+    if len(pure):
+        pure_width = max(_pure_width(row) for row in pure) 
     else:
         return 0
     if alias:
-        maxj_alias = max(max(j for j in alias[i]) for i in alias) 
-        return max(maxj_pure + 1, maxj_alias + 1)
+        alias_width = 1 + max(max(j for j in alias[i]) for i in alias) 
+        return max(pure_width,alias_width)
     else:
-        return maxj_pure + 1
+        return pure_width 
 
 
 #
