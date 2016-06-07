@@ -19,7 +19,7 @@ class TableFrame(object):
 
     def __str__(self):
         sections = ",".join(str(s) for s in self.sections())
-        return "STDF(%d,%s;%s)" % (self.depth,self.width,sections)
+        return "TableFrame(%d,%s;%s)" % (self.depth,self.width,sections)
 
     def __len__(self):
         return len(self.physical)
@@ -144,7 +144,7 @@ class TableFrameSection(object):
         self.width = logical_width(self.pure,self.alias)
 
     def __str__(self):
-        return "STS(%s,%d,%s)" % (self.name,self.depth,self.width)
+        return "TFS(%s,%d,%s)" % (self.name,self.depth,self.width)
 
     @property
     def dims(self):
