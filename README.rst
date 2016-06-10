@@ -5,18 +5,20 @@ The assumption is that you've already parsed the HTML document with bs4, and hav
 A simple use case might look like this::
 
     from bs4 import BeautifulSoup
-    from bs4util.spantable import parse_table
+    from bs4util.spantable import TableFrame 
 
     html = "\n".join(open(filename,"rt").readlines())
     soup = BeautifulSoup(html)
     table = soup.find_all('table')[0]
-    frame = parse_table(table)
+    frame = TableFrame(table)
+    print("dims = %s" % str(frame.dims))
     for row in frame.rows():
         print(row)
 
-Where the rows will be displayed as they would be rendered by a standards-complient browser, taking all of the various positioning directives into account.  There are also two demo scripts:
-- tests/show-periodc.py
-- tests/show-grammer.py
+Where the rows will be displayed as they would be rendered by a standards-complient browser, taking all of the various positioning directives into account.  There are also two demo scripts::
+
+  - tests/show-periodic.py
+  - tests/show-grammar.py
 
 providing somewhat more complex use cases involving semantic extraction from HTML tables Wikipedia (Periodic Table and Japanese verb declension, respectively).
 
