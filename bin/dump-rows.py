@@ -4,7 +4,7 @@
 #
 import sys
 from bs4 import BeautifulSoup
-from bs4util.spantable import TableFrame 
+from bs4util.spantable import TableFrame
 
 filename = sys.argv[1]
 

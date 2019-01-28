@@ -5,9 +5,9 @@
 #
 import sys
 from bs4 import BeautifulSoup
-from bs4util.spantable import TableFrame 
+from bs4util.spantable import TableFrame
 
-filename = "tests/data/90-periodic-table.html" 
+filename = "tests/data/90-periodic-table.html"
 
 html = "\n".join(open(filename,"rt").readlines())
 soup = BeautifulSoup(html)
@@ -23,7 +23,7 @@ def parse_rows(rows):
         period = None
         for j,cell in enumerate(r):
             if j == 0:
-                period = cell 
+                period = cell
             elif cell is not None and len(cell):
                 yield {"period":period,"group":group[j],"element":cell}
 

@@ -5,9 +5,9 @@
 #
 import sys
 from bs4 import BeautifulSoup
-from bs4util.spantable import TableFrame 
+from bs4util.spantable import TableFrame
 
-filename = "tests/data/91-japanese-grammar.html" 
+filename = "tests/data/91-japanese-grammar.html"
 
 html = "\n".join(open(filename,"rt").readlines())
 soup = BeautifulSoup(html)
@@ -27,16 +27,15 @@ def parse_rows(rows):
     group = rows[0]     # header row with group designations
     body  = rows[2:-1]  # all of the elements live in these rows
     # The first two columns are thought of as keys; the rest are group tags.
-    grouptags  = group[2:-1] 
+    grouptags  = group[2:-1]
     for i,row in enumerate(body):
         case = row[0]
         rule = row[1]
         cells = row[2:-1]
         r = cleandict(grouptags,cells)
-        yield case,rule,r 
+        yield case,rule,r
 
 rows = list(frame.rows())
 for case,rule,r in parse_rows(rows):
     print("%s, %s: %s" % (case,rule,r))
-
 
