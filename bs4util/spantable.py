@@ -3,10 +3,10 @@ from copy import deepcopy
 from itertools import product, groupby
 from collections import defaultdict, OrderedDict
 
-def frame_keys(): 
+def frame_keys():
     return ('dims','head','body','foot','rows')
 
-def section_names(): 
+def section_names():
     return ('thead','tbody','tfoot')
 
 class TableFrame(object):
@@ -32,7 +32,7 @@ class TableFrame(object):
     def consume(self,sections):
         for section in sections:
             self.add(section)
-    
+
     def sections(self):
         '''A generator which yields sections in logical (render) order:'''
         if 'thead' in self._first:
@@ -45,7 +45,7 @@ class TableFrame(object):
             ): yield section
         if 'tfoot' in self._first:
             yield self.physical[self._first['tfoot']]
-            
+
     def first(self,name):
         if name in self._first:
             return self.physical[self._first[name]]
@@ -54,11 +54,11 @@ class TableFrame(object):
 
 
     @property
-    def head(self): 
+    def head(self):
         return self.first('thead')
 
     @property
-    def body(self): 
+    def body(self):
         if 'tbody' in self._first and None in self._first:
             if self._first['tbody'] < self._first[None]:
                 return self.first('tbody')
@@ -72,7 +72,7 @@ class TableFrame(object):
             return None
 
     @property
-    def foot(self): 
+    def foot(self):
         return self.first('tfoot')
 
     @property
@@ -94,7 +94,7 @@ class TableFrame(object):
         return (self.depth,self.width)
 
     def rows(self):
-        for section in self.sections(): 
+        for section in self.sections():
             for row in section.rows():
                 yield rpad_list(row,self.width)
 
@@ -112,7 +112,7 @@ class TableFrame(object):
     #
 
     def _keys(self):
-        return (key for key in frame_keys() if self._contains(key)) 
+        return (key for key in frame_keys() if self._contains(key))
 
     def _contains(self,key):
         if key in ('dims','rows'):
@@ -126,7 +126,7 @@ class TableFrame(object):
         if key == 'dims':
             return self.dims
         elif key in ('head','body','foot'):
-            return self.__getattribute__(key) 
+            return self.__getattribute__(key)
         elif key == 'rows':
             return self.rows()
         else:
@@ -137,10 +137,10 @@ class TableFrame(object):
 class TableFrameSection(object):
 
     def __init__(self,name,pure,alias):
-        self.name = name 
-        self.pure = pure 
+        self.name = name
+        self.pure = pure
         self.alias = pivot_alias(alias)
-        self.depth = len(self.pure) 
+        self.depth = len(self.pure)
         self.width = logical_width(self.pure,self.alias)
 
     def __str__(self):
@@ -156,7 +156,7 @@ class TableFrameSection(object):
         return True
 
     def cell(self,i,j):
-        if not self.in_bounds(i,j): 
+        if not self.in_bounds(i,j):
             raise ValueError("invalid coordinates (%d,%d)" % (i,j))
         if j in self.pure[i]:
             return self.pure[i][j]
@@ -188,7 +188,7 @@ def textify(cell):
 
 def pivot_alias(alias):
     jmax = 0
-    a = defaultdict(dict) 
+    a = defaultdict(dict)
     for i,j in alias:
         a[i][j] = alias[(i,j)]
     return a
@@ -209,7 +209,7 @@ def logical_width(pure,alias):
         alias_width = 1 + max(max(j for j in alias[i]) for i in alias) 
         return max(pure_width,alias_width)
     else:
-        return pure_width 
+        return pure_width
 
 
 #
@@ -292,7 +292,7 @@ def parse_grid(rows):
         for j,cell in enumerate(cells):
             while alias.get((i,k)):
                 k += 1
-            purerow[k] = cell 
+            purerow[k] = cell
             spantup = logical_span(cell)
             paint_alias(alias,i,k,spantup,depth)
             k += 1
@@ -303,7 +303,7 @@ def parse_grid(rows):
 
 
 def expected_children(tag,nameset):
-    '''Yields direct child elements of a tag matching a given name set.''' 
+    '''Yields direct child elements of a tag matching a given name set.'''
     def is_expected(tag):
         return tag.name in nameset
     return filter(is_expected,tag.find_all(recursive=False))
@@ -333,11 +333,11 @@ def expected_children(tag,nameset):
 #      
 #
 def groupby_virtual_sections(tag):
-    nameset = set(['thead','tbody','tfoot','tr']) 
+    nameset = set(['thead','tbody','tfoot','tr'])
     children = expected_children(tag,nameset)
     for key,group in groupby(children,lambda child:child.name):
         if key == 'tr':
-            yield None,group 
+            yield None,group
         else:
             for enctag in group:
                 rowgroup = enctag.find_all('tr',recursive=False)
@@ -367,13 +367,13 @@ def describe_rows(rows):
 
 def describe_frame(frame):
     d = frame.as_dict()
-    yield "frame = %s" % frame 
-    for key,member in d.items(): 
+    yield "frame = %s" % frame
+    for key,member in d.items():
         if key == 'dims':
             yield "frame.%s = %s" % (key,member)
         elif key == 'rows':
             yield "frame.%s = %s" % (key,list(member))
-        else: 
+        else:
             # Implicity key must be one of 'head','body','foot':
             yield "frame.%s = %s = %s" % (key,member,member.rows())
 
