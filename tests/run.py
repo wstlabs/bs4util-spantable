@@ -1,4 +1,4 @@
-import os, sys, argparse 
+import os, sys, argparse
 from glob import glob
 from bs4 import BeautifulSoup
 from tests.util import find_files, read_file, extract_test, test_pair
@@ -18,7 +18,7 @@ else:
 
 logging.basicConfig(
     format = "::%(levelname)s %(funcName)s %(message)s",
-    level  = _loglevel, 
+    level  = _loglevel
     stream = sys.stdout
 )
 log = logging.getLogger()
@@ -27,9 +27,9 @@ skip = not args.noskip
 todolist,skiplist = find_files('tests/data',args.prefix,skip)
 log.info("that be %d files (%d skipped)." % (len(todolist),len(skiplist)))
 
-for path in todolist: 
+for path in todolist:
     log.info("%s .." % path)
-    html = read_file(path) 
+    html = read_file(path)
     soup = BeautifulSoup(html)
     frame,spec = extract_test(soup)
     test_pair(frame,spec)
