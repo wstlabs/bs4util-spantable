@@ -1,7 +1,7 @@
 import simplejson as json
 from glob import glob
 from bs4util.spantable import TableFrame, frame_keys, describe_frame
-from collections import OrderedDict 
+from collections import OrderedDict
 from itertools import chain
 from copy import deepcopy
 import logging
@@ -30,7 +30,7 @@ def read_file(path):
 def load_spec(block):
     '''Loads an (ordered) spec dict from a raw JSON string.'''
     d = json.loads(block)
-    allkeys = frame_keys() 
+    allkeys = frame_keys()
     spec = OrderedDict((k,d[k]) for k in allkeys if k in d)
     # We ast the dims member as a tuple, if present, to make it compatible 
     # to the .dims attribute in STDF objects. 
@@ -87,10 +87,10 @@ def test_section(frame,spec,key):
         log.debug("frame.%s is null, as expected" % key)
 
 
-def describe_pair(frame,spec): 
+def describe_pair(frame,spec):
     return chain (describe_spec(spec),describe_frame(frame))
 
-def test_pair(frame,spec): 
+def test_pair(frame,spec):
     for line in describe_pair(frame,spec):
         log.debug(line)
     for key in spec.keys():
